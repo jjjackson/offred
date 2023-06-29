@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+
+    <!-- Top-level ViewPager for displaying articles -->
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/articlesViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+
+
+        <!-- Comment tree view (inside CardView) -->
+
+    </androidx.viewpager.widget.ViewPager>
+    <com.zulu.offred.MyImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/bubble_image_zoom"
+        android:visibility="gone"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="70dp"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:onClick="closeZoom"
+        app:maxImageSize="58dp"
+        android:visibility="gone"
+        app:srcCompat="@android:drawable/ic_delete"
+        android:layout_marginRight="@dimen/fab_margin" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
