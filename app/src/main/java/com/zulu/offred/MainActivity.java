@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Html;
 import android.util.AttributeSet;
@@ -72,37 +73,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         dbHelper = new DatabaseHelper(getApplicationContext());
-
-        // Enable vertical scrolling
-        //viewPager.setVerticalScrollBarEnabled(true);
-        //loadSub(sub);
         scheduleAlarm();
         vpa = findViewById(R.id.articlesViewPager);
-        //ViewPager commentsViewPager = findViewById(R.id.commentsViewPager);
-
         articles = dbHelper.fetchArticles("subs");
         List<coms> cc = dbHelper.fetchComments("base");
         for (int i = 0; i < cc.size(); i++) {
             subs.add(cc.get(i).comment);
         }
         loadSub("subs");
-//        articles = new ArrayList<>();
-//        articles.add(new article("Subreddits","add, remove, edit, download", Arrays.asList(new coms("All","","",0), new coms("AskReddit","","",0), new coms("Pics","","",0), new coms("News+worldnews","","",0), new coms("Funny+mildlyinteresting","","",0)),"downloadAll","", ""));
-//        articles.add(new article("All","downloaded:never", new ArrayList<>(),"downloadSub","", ""));
-//        articles.add(new article("AskReddit","downloaded:never", new ArrayList<>(),"downloadSub","", ""));
-//        articles.add(new article("Pics","downloaded:never", new ArrayList<>(),"downloadSub","", ""));
-//        articles.add(new article("News+worldnews","downloaded:never", new ArrayList<>(),"downloadSub","", ""));
-//        articles.add(new article("Funny+mildlyinteresting","downloaded:never", new ArrayList<>(),"downloadSub","", ""));
-
-// Create and set the ArticlesPagerAdapter
-
-
-
-// Create and set the CommentsPagerAdapter
-        //CommentsPagerAdapter commentsAdapter = new CommentsPagerAdapter(this, commentsList);
-        //commentsViewPager.setAdapter(commentsAdapter);
-
-
+        findViewById(R.id.add_button).setOnClickListener(view -> {
+            dbHelper.insertsub(((TextView)findViewById(R.id.add_text_box)).getText().toString());
+            findViewById(R.id.addModal).setVisibility(View.GONE);
+            ((TextView)findViewById(R.id.add_text_box)).setText("");
+            loadSub("subs");
+        });
         listener = new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -142,24 +126,32 @@ public class MainActivity extends AppCompatActivity {
             all.c = getApplicationContext();
             all.dbh = dbHelper;
             all.execute();
-
+            (new Handler()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    loadSub(sub);
+                }
+            }, 3000);
+            (new Handler()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    loadSub(sub);
+                }
+            }, 6000);
             dbHelper.startFetch(sub);
             //articles = dbHelper.fetchArticles("subs");
         }
         ArrayList<article> all = new ArrayList<>();
 
         all.addAll(articles);
-        if(!sub.equals("subs"))all.add(new article(sub,sub,"Updating...","","",""));
+        if(!sub.equals("subs")){
+            all.add(new article(sub,sub,"Updating...","","",""));
+        }else{
+
+        }
         apa = new ArticlesPagerAdapter(this, all);
         vpa.setAdapter(apa);
         vpa.setCurrentItem(1);
-
-//        TextView title = findViewById(R.id.title);
-//        title.setText(sub=="main"?"Sub Reddits":sub);
-//        TextView subtitle = findViewById(R.id.title);
-//        String lu = getSharedPreferences("offred",MODE_PRIVATE).getString("lastUp","never");
-//        subtitle.setText("Last updated:"+lu);
-//        String subs = getSharedPreferences("offred",MODE_PRIVATE).getString("subs","funny,pics,news");
     }
     private void loadarts(int num){
         System.out.println("loading arts:"+num);
@@ -339,6 +331,13 @@ public class MainActivity extends AppCompatActivity {
 
             coms.setAdapter(commentsAdapter);
             coms.setLayoutManager(new LinearLayoutManager(container.getContext()));
+            ((ScrollView)itemView.findViewById(R.id.scrolling)).smoothScrollTo(0, 0);
+            (new Handler()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ((ScrollView)itemView.findViewById(R.id.scrolling)).smoothScrollTo(0, 0);
+                }
+            }, 300);
             return itemView;
         }
 
@@ -362,6 +361,7 @@ public class MainActivity extends AppCompatActivity {
             this.comments = comments;
             ocomments = new ArrayList<>();
             ocomments.addAll(comments);
+            if(comments.size()>0&&comments.get(0).article.equals("base"))this.comments.add(comments.size(),new coms("addme","add","","base",0));
         }
 
         @NonNull
@@ -405,7 +405,7 @@ public class MainActivity extends AppCompatActivity {
 
             public void bind(coms comment) {
                 // Bind comment data to the views here
-                //System.out.println("ee"+comment);
+                //System.out.println("ee"+comment._id);
                 if(comment.indent>hidei)return;
                 hidei=99;
                 titles.setText(comment.comment);
@@ -417,19 +417,30 @@ public class MainActivity extends AppCompatActivity {
 
                 l.findViewById(R.id.preSpacer).setMinimumWidth(comment.indent>1?(10*(comment.indent-1)):0);
                 if(comment.article.equals("base")){
-                    List<coms> arts = dbHelper.fetchComments(comment.comment);
-                    info.setText("downloaded:"+arts.size());
-                    itemView.setOnClickListener(view -> {
-                        currentSub = comment.comment;
-                        loadSub(comment.comment);
-                        System.out.println("change current sub to "+currentSub);
-                    });
-                    itemView.findViewById(R.id.dlsub).setVisibility(View.VISIBLE);
-                    itemView.findViewById(R.id.dlsub).setOnClickListener(view -> {
-                        System.out.println("downlading sub"+comment.comment);
-                        dbHelper.clearSub(comment.comment);
-                        loadSub(comment.comment);
-                    });
+                    if(comment._id.equals("addme")){
+                        itemView.setOnClickListener(view -> findViewById(R.id.addModal).setVisibility(View.VISIBLE));
+                        itemView.findViewById(R.id.addsub).setOnClickListener(view -> findViewById(R.id.addModal).setVisibility(View.VISIBLE));
+                        itemView.findViewById(R.id.addsub).setVisibility(View.VISIBLE);
+                    }else {
+                        List<coms> arts = dbHelper.fetchComments(comment.comment);
+                        info.setText("downloaded:" + arts.size());
+                        itemView.setOnClickListener(view -> {
+                            currentSub = comment.comment;
+                            loadSub(comment.comment);
+                            System.out.println("change current sub to " + currentSub);
+                        });
+                        itemView.findViewById(R.id.dlsub).setVisibility(View.VISIBLE);
+                        itemView.findViewById(R.id.removesub).setVisibility(View.VISIBLE);
+                        itemView.findViewById(R.id.removesub).setOnClickListener(view -> {
+                            dbHelper.removeSub(comment.comment);
+                            loadSub("subs");
+                        });
+                        itemView.findViewById(R.id.dlsub).setOnClickListener(view -> {
+                            System.out.println("downlading sub" + comment.comment);
+                            dbHelper.clearSub(comment.comment);
+                            loadSub(comment.comment);
+                        });
+                    }
 
                 }else{
                     itemView.setOnClickListener(view -> {
@@ -658,8 +669,8 @@ public class MainActivity extends AppCompatActivity {
             thread.start();
         }
         if(l.startsWith("https://www.reddit.com/gallery/")){
-            m = name;
             String finalM = m;
+            m = name+".jpg";
             Thread g = new Thread(() ->{ getURLSFromGallery(l, finalM,c); });
             g.start();
         }

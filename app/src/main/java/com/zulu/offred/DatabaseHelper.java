@@ -60,7 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "'allsub','base','Lastupdated:never','all',0)";
         db.execSQL(createdefaultsQuery);
         createdefaultsQuery = "INSERT OR IGNORE INTO "+ComentTABLE_NAME+"("+COLUMN_ID+", "+COLUMN_STRING1+", "+COLUMN_STRING2+", "+COLUMN_STRING3+", "+COLUMN_INT1+") VALUES("+
-                "'picsub','base','Lastupdated:never','pics',0)";
+                "'picssub','base','Lastupdated:never','pics',0)";
         db.execSQL(createdefaultsQuery);
         createdefaultsQuery = "INSERT OR IGNORE INTO "+ComentTABLE_NAME+"("+COLUMN_ID+", "+COLUMN_STRING1+", "+COLUMN_STRING2+", "+COLUMN_STRING3+", "+COLUMN_INT1+") VALUES("+
                 "'funnysub','base','Lastupdated:never','funny',0)";
@@ -79,6 +79,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void insertsub(String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ID, name+"sub");
+        values.put(COLUMN_STRING1, "base");
+        values.put(COLUMN_STRING2, "Lastupdated:never");
+        values.put(COLUMN_STRING3, name);
+        values.put(COLUMN_INT1, 0);
+        db.insertWithOnConflict(ComentTABLE_NAME, null, values,SQLiteDatabase.CONFLICT_REPLACE);
+        db.close();
+    }
+
+    public void removeSub(String sub){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selection = COLUMN_ID + " LIKE ?";
+        String[] selectionArgs = { "%" + sub +"sub"+ "%" };
+        System.out.println(selectionArgs[0]);
+        int cursor2 = db.delete(ComentTABLE_NAME, selection, selectionArgs);
+        System.out.println("deleted from cdb:"+cursor2);
+    }
     public void insertComment(String id,String article, String info, String comment, int indent) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -168,6 +188,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void clearDB(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selection = COLUMN_STRING1 + " NOT LIKE ?";
+        String[] selectionArgs = { "%" + "base"+ "%" };
+        System.out.println(selectionArgs[0]);
+        int cursor2 = db.delete(ComentTABLE_NAME, selection, selectionArgs);
+        System.out.println("deleted from cdb:"+cursor2);
+    }
+
+    public void clearD2B(){
         SQLiteDatabase db = this.getReadableDatabase();
         String dropcTableQuery = "DROP TABLE IF EXISTS " + ComentTABLE_NAME;
         db.execSQL(dropcTableQuery);

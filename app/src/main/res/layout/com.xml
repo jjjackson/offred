@@ -46,6 +46,18 @@
             android:textSize="12sp" />
 
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/removesub"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="3dp"
+        android:layout_marginRight="3dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@android:drawable/ic_delete"
+        android:visibility="gone" />
+
     <ImageButton
         android:id="@+id/dlsub"
         android:layout_width="50dp"
@@ -54,7 +66,17 @@
         android:layout_marginRight="16dp"
         android:background="@android:color/transparent"
         android:scaleType="fitCenter"
-        android:visibility="gone"
         android:src="@android:drawable/stat_sys_download"
-        />
+        android:visibility="gone" />
+
+    <ImageButton
+        android:id="@+id/addsub"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@android:drawable/ic_input_add"
+        android:visibility="gone" />
 </LinearLayout>

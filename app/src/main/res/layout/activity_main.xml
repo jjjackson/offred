@@ -36,4 +36,44 @@
         android:visibility="gone"
         app:srcCompat="@android:drawable/ic_delete"
         android:layout_marginRight="@dimen/fab_margin" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/addModal"
+        android:translationZ="9dp"
+        android:visibility="gone"
+        android:layout_height="match_parent">
+
+        <!-- Dimmed background modal -->
+        <View
+            android:id="@+id/modal_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#80000000" />
+
+        <!-- Floating textbox and confirm button -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="16dp">
+
+            <EditText
+                android:id="@+id/add_text_box"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="120dp"
+                android:hint="Sub Name" />
+
+            <Button
+                android:id="@+id/add_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirm" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
